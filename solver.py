@@ -109,29 +109,9 @@ def restrict(p, i, j, e, s): # take an element e, add it to a set of restriction
                 l.add((x, y))
     return l
 
-def unrestrict(p, i, j, e, s):
-    for x in range(9):
-        if p.board[j][x] == 0: # unassigned in the row
-            s[(x, j)].discard(e) # add e to this cell's set of restrictions
-            
-    for y in range(9):
-        if p.board[y][i] == 0: # unassigned in the column
-            s[(i, y)].discard(e)
-            
-    b0x, b0y = 3 * (i // 3), 3 * (j // 3)
-    for y in range(b0y, b0y + 3):
-        for x in range(b0x, b0x + 3):
-            if p.board[y][x] == 0: # all unassigned in box
-                s[(x, y)].discard(e)
-    return s
-
 def backtracking_search_MRV(p):
-    # This part is not fully correct.
-    # It does not work for test cases that have more than a few digits missing
     
     def backtrack(p, dom, s):
-        # global node_count
-        # node_count += 1
         os.system('clear')
         p.pprint()
         print(dom)
