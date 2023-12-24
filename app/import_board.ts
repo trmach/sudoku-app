@@ -2,12 +2,15 @@
 
 import { readFileSync } from 'fs';
 
-export default async function fetchBoard() { // b-b-but we have all these wonderful frameworks and libraries
+const tempPath = '/home/charles/dev/sudoku-app'
+
+// b-b-but we have all these wonderful frameworks and libraries...
+export async function fetchBoard(): Promise<string[][]> { 
 	
-	const content = readFileSync(`${__dirname}/boards/testcase4_solution.csv`, 'utf8');
-	const board = [];
+	const content: string = readFileSync(/*help*/`${tempPath}/public/boards/testcase1.csv`, 'utf8');
+	const board: string[][] = [];
 	let i = 0;
-	while (content[i]) {
+	while (content[i] !== undefined) {
 		let row = [];
 		while (content[i] !== '\n') {
 			if (content[i] !== ',' && content[i] !== '\r') {

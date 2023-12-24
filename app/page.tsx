@@ -1,7 +1,17 @@
-import Image from 'next/image'
+//import Image from 'next/image'
 import styles from './page.module.css'
 import Puzzle from './Puzzle'
 
+export default function Home() {
+  return (
+    <>
+    <div className={styles.code}>
+        yay puzzles
+      </div>
+    <Puzzle />
+    </>
+  );
+}
 // export default function Home() {
 //   return (
 //     <main className={styles.main}>
@@ -95,15 +105,3 @@ import Puzzle from './Puzzle'
 //   )
 // }
 
-export default function Home() {
-  return (
-    <>
-    <div className={styles.code}>
-      <p>slave mentality
-        </p>
-        yay puzzles
-      </div>
-    <Puzzle />
-    </>
-  );
-}
