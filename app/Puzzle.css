@@ -59,42 +59,36 @@ body {
 .square {
   background: #fff;
   border: 1px solid #999;
-  color: black;
+  color: blue;
   float: left;
-  font-size: 6vmin;
+  font-size: 8vmin;
   font-weight: light;
-  line-height: 8vmin;
-  height: 8vmin;
+  line-height: 10vmin;
+  height: 10vmin;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 8vmin;
+  width: 10vmin;
 }
 
-.empty-square {
-  background: #fff;
-  border: 1px solid #999;
-  float: left;
-  font-size: 16px;
-  font-weight: bold;
-  line-height: 8vmin;
-  height: 8vmin;
-  margin-right: -1px;
-  margin-top: -1px;
-  padding: 0;
-  text-align: center;
-  width: 8vmin;
+.square-box-candidate {
+  font-size: 2vmin;
+  text-align: start;
+  
 }
 
 .square-highlight {
     background: #ffe282;
-    
 }
 
 .square-selected {
     background: #ffd54d;
-    
+}
+
+.square-given {
+  background: #e0e0e0;
+  color: black;
 }
 
 .board-row:after {
@@ -119,14 +113,8 @@ body {
   text-align: center;
 }
 
-.status {
-  margin-bottom: 10px;
-}
-.game {
-  display: flex;
-  flex-direction: row;
-}
 
-.game-info {
-  margin-left: 20px;
+.puzzle-parent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
