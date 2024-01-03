@@ -3,11 +3,13 @@
 import { useState, useEffect } from 'react';
 import './Puzzle.css';
 import { fetchBoard } from './import_board';
-import { NumberButtons, DeleteButton } from './NumberButtons';
+import Numpad from './NumberButtons';
 
 type Puzzle = {
-  board: [string, boolean][][], // string: value, boolean: whether this digit was given
-  isSelected: [number, number]
+  board: [string, boolean, boolean][][], // string: value, boolean: whether this digit was given
+  isSelected: [number, number],
+  cellCandidateMode: boolean,
+  cellCandidates: string[][]
 } 
 
 function cmp(a: [number, number], b: [number, number]): boolean {
@@ -17,8 +19,10 @@ function cmp(a: [number, number], b: [number, number]): boolean {
 export function Puzzle() {
 
   const [state, setState] = useState<Puzzle>({ // bloated mess
-    board: Array(9).fill(Array(9).fill([' ', false])),
-    isSelected: [-1, -1]
+    board: Array(9).fill(Array(9).fill([' ', false, false])),
+    isSelected: [-1, -1],
+    cellCandidateMode: false,
+    cellCandidates: Array.from(Array(9), () => {return new Array(9).fill('')})
 
   });
   // We will need to create a selectable list of boards and pass them in here
@@ -26,7 +30,7 @@ export function Puzzle() {
   useEffect(() => { // ChatGPT told me how to use useEffect
     const fetchPuzzle = async () => {
       try {
-        const board: [string, boolean][][] = await fetchBoard();
+        const board: [string, boolean, boolean][][] = await fetchBoard();
         setState({...state, board: board});
       } catch (err) {
         console.error('Error fetching board:', err);
@@ -35,12 +39,10 @@ export function Puzzle() {
     fetchPuzzle();
   }, [])
 
-  
   function Cell({ value, position }: { value: string, position: [number, number] }) {
 
     const [hState, setHState] = useState(false);
-    const [boxCandidates, setBoxCandidates] = useState<number[]>([]);
-    const [cellCandidates, setCellCandidates] = useState<number[]>([]);
+//    const [boxCandidates, setBoxCandidates] = useState<number[]>([]);
 
     function handleCellSelect() {
       if (!cmp(state.isSelected, position)) {
@@ -51,19 +53,17 @@ export function Puzzle() {
     }
 
     return (
-      <input type='button' value={value} className={'square ' 
+      <button className={'square ' 
         + (state.board[position[1]][position[0]][1] ? 'square-given ' : '')
         + (hState ? 'square-highlight ' : '') 
-        + (cmp(state.isSelected, position) ? 'square-selected' : '')
+        + (cmp(state.isSelected, position) ? 'square-selected ' : '')
+        + (state.board[position[1]][position[0]][2] ? 'square-cell-candidate' : '')
       }
       onMouseEnter={() => setHState(true)}
       onMouseLeave={() => setHState(false)}
-      onClick={handleCellSelect}
-      onKeyDown={(e) => {
-        if (cmp(state.isSelected, position)) {
-          console.log(position, "selected with key", e.key); // shitty doesn't work
-        }
-      }} />
+      onClick={handleCellSelect}>
+        {(state.board[position[1]][position[0]][2] ? state.cellCandidates[position[1]][position[0]] : value)}
+      </button>
     );
   }
 
@@ -94,14 +94,43 @@ export function Puzzle() {
     );                             /* ^ always remember to <C-v>jjjjjjjjg<C-a> */
   }
 
-  function handleNumberButton(e: string): void {
+  function handleInput(e: string): void {
+    const xy = state.isSelected;
+    const x = state.isSelected[0];
+    const y = state.isSelected[1];
+
+    if (cmp(xy, [-1, -1])) return;        // no cell selected
+    if (state.board[y][x][1]) return;     // digit is not given
+
     try {
       const newBoard = state.board;
-      newBoard[state.isSelected[1]][state.isSelected[0]][0] = e;
+      console.log("cell candidate mode: ", state.cellCandidateMode)
+      if (state.cellCandidateMode) {
+        let newCandidates = state.cellCandidates;
+        if (e === '') {                                               // we hit 'delete'
+          console.log('delete hit')
+          newCandidates[y][x] = newCandidates[y][x].slice(0, -1);
+          setState({...state, cellCandidates: newCandidates});
+          return
+        }
+        if (!newCandidates[y][x].includes(e)) {
+          newBoard[y][x][2] = true;
+          newCandidates[y][x] += e; // add candidate
+          setState({...state, board: newBoard, cellCandidates: newCandidates});
+          console.log('new candidate set: ', state.board[y][x][2]);
+          return
+        } else {
+          return
+        }
+      }
+      console.log("setting final digit")
+      newBoard[y][x][2] = false;
+      newBoard[y][x][0] = e;      // final input
       setState({...state, board: newBoard});
     } catch {
       return
     }
+
   }
 
   return(
@@ -123,10 +152,15 @@ export function Puzzle() {
           <Box box={8} />
         </div>
       </div>
-      <div>
-        <NumberButtons handleClick={(e) => {handleNumberButton(e)}} />
-        <DeleteButton handleClick={(e) => {handleNumberButton(e)}} />
-      </div>
+      <Numpad handleNumberButtons={(e: string) => handleInput(e)}
+        handleDelete={(e: string) => handleInput(e)}
+        handleToggleCandidate={() => {setState({...state, cellCandidateMode: !state.cellCandidateMode})}} />
+      {//    <div>
+//      <NumberButtons handleClick={(e) => {handleInput(e)}} />
+//      <DeleteButton handleClick={(e) => {handleInput(e)}} />
+//      <ToggleCandidate handleClick={() => {setState({...state, cellCandidateMode: !state.cellCandidateMode})}} />
+//    </div>
+}
     </div>
   );
 

@@ -12,6 +12,10 @@
   margin: 2px;
 }
 
+.candidateMode {
+  font-size: 3vmin;
+}
+
 .deleteButton {
   font-size: 4vmin;
   height: 12vmin;

@@ -70,12 +70,18 @@ body {
   padding: 0;
   text-align: center;
   width: 10vmin;
+  inline-size: 10vmin;
+  overflow-wrap: break-word;
 }
 
 .square-box-candidate {
   font-size: 2vmin;
   text-align: start;
-  
+}
+
+.square-cell-candidate {
+  font-size: 3vmin;
+  text-wrap: wrap;
 }
 
 .square-highlight {
@@ -113,8 +119,7 @@ body {
   text-align: center;
 }
 
-
 .puzzle-parent {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 0fr 0fr;
 }
